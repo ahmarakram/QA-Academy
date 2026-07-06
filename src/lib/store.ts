@@ -97,6 +97,8 @@ interface Store {
   resetOnboarding: () => void;
   tourActive: boolean;
   setTourActive: (v: boolean) => void;
+  tourStep: number;
+  setTourStep: (n: number) => void;
   // cert / plan actions
   setPlan: (plan: Plan) => void;
   earnCert: (cert: EarnedCert) => void;
@@ -125,6 +127,7 @@ export const useStore = create<Store>()(
       theme: 'dark',
       hasOnboarded: false,
       tourActive: false,
+      tourStep: 0,
       plan: 'free',
       earnedCerts: [],
       freeCertUsed: false,
@@ -211,6 +214,7 @@ export const useStore = create<Store>()(
       completeOnboarding: () => set({ hasOnboarded: true }),
       resetOnboarding: () => set({ hasOnboarded: false }),
       setTourActive: (v) => set({ tourActive: v }),
+      setTourStep: (n) => set({ tourStep: n }),
 
       setPlan: (plan) => set({ plan }),
       // Idempotent: never store the same certName twice

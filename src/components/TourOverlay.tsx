@@ -20,122 +20,124 @@ const STEPS = [
 type Rect = { top: number; left: number; width: number; height: number };
 
 export default function TourOverlay() {
-  const { tourActive, setTourActive } = useStore();
+  const { tourActive, setTourActive, tourStep: step, setTourStep: setStep } = useStore();
   const router = useRouter();
   const pathname = usePathname();
-  const [step, setStep] = useState(0);
   const [spotRect, setSpotRect] = useState<Rect | null>(null);
-  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [tooltipStyle, setTooltipStyle] = useState<{ top: number; left: number; width: number } | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function clearTimer() {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = null;
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
   }
 
-  // Single effect: navigate OR show tooltip depending on current path
   useEffect(() => {
     if (!tourActive) return;
     clearTimer();
     setSpotRect(null);
-    setTooltipPos(null);
+    setTooltipStyle(null);
 
     const s = STEPS[step];
 
-    // Wrong page — navigate first, this effect will re-run when pathname changes
+    // Navigate if on wrong page — effect re-runs when pathname updates
     if (pathname !== s.path) {
       router.push(s.path);
       return;
     }
 
-    // Correct page — wait for paint then position
+    // On correct page — wait for render then position
     timerRef.current = setTimeout(() => {
       const TW = Math.min(380, window.innerWidth - 32);
 
       if (!s.selector) {
         setSpotRect(null);
-        setTooltipPos({ top: window.innerHeight / 2 - 120, left: (window.innerWidth - TW) / 2, width: TW });
+        setTooltipStyle({ top: window.innerHeight / 2 - 120, left: (window.innerWidth - TW) / 2, width: TW });
         return;
       }
 
       const el = document.querySelector(s.selector);
       if (!el) {
-        // Element not found, show centred
         setSpotRect(null);
-        setTooltipPos({ top: window.innerHeight / 2 - 120, left: (window.innerWidth - TW) / 2, width: TW });
+        setTooltipStyle({ top: window.innerHeight / 2 - 120, left: (window.innerWidth - TW) / 2, width: TW });
         return;
       }
 
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.scrollIntoView({ behavior: 'instant', block: 'center' });
 
-      // Wait for scroll to settle, then measure
       timerRef.current = setTimeout(() => {
         const r = el.getBoundingClientRect();
         const PAD = 8;
-        setSpotRect({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
+        const sr: Rect = { top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 };
+        setSpotRect(sr);
 
-        // Position tooltip below or above
+        // Position tooltip — prefer below, fall back above
         const cx = r.left + r.width / 2;
-        let top = r.bottom + PAD + 12;
-        if (top + 220 > window.innerHeight) top = Math.max(8, r.top - 220 - PAD - 12);
+        let top = r.bottom + PAD + 14;
+        if (top + 200 > window.innerHeight) top = Math.max(8, r.top - 200 - PAD - 14);
         const left = Math.max(8, Math.min(cx - TW / 2, window.innerWidth - TW - 8));
-        setTooltipPos({ top, left, width: TW });
-      }, 380);
-    }, 350);
+        setTooltipStyle({ top, left, width: TW });
+      }, 400);
+    }, 380);
 
     return clearTimer;
   }, [step, tourActive, pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const next = () => step < STEPS.length - 1 ? setStep(s => s + 1) : close();
-  const back = () => step > 0 ? setStep(s => s - 1) : undefined;
+  const next = () => step < STEPS.length - 1 ? setStep(step + 1) : close();
+  const back = () => step > 0 ? setStep(step - 1) : undefined;
   const close = () => { setTourActive(false); setStep(0); clearTimer(); };
 
   if (!tourActive) return null;
 
-  const GAP = 4;
-
   return (
     <>
-      {/* 4-rectangle backdrop — creates a real cutout around spotRect */}
-      {spotRect ? (
-        <>
-          {/* Top */}
-          <div onClick={close} style={{ position: 'fixed', zIndex: 9000, background: 'rgba(0,0,0,0.7)',
-            top: 0, left: 0, right: 0, height: spotRect.top - GAP, pointerEvents: 'all' }} />
-          {/* Bottom */}
-          <div onClick={close} style={{ position: 'fixed', zIndex: 9000, background: 'rgba(0,0,0,0.7)',
-            top: spotRect.top - GAP + spotRect.height + GAP * 2, left: 0, right: 0, bottom: 0, pointerEvents: 'all' }} />
-          {/* Left */}
-          <div onClick={close} style={{ position: 'fixed', zIndex: 9000, background: 'rgba(0,0,0,0.7)',
-            top: spotRect.top - GAP, left: 0, width: spotRect.left - GAP, height: spotRect.height + GAP * 2, pointerEvents: 'all' }} />
-          {/* Right */}
-          <div onClick={close} style={{ position: 'fixed', zIndex: 9000, background: 'rgba(0,0,0,0.7)',
-            top: spotRect.top - GAP, left: spotRect.left - GAP + spotRect.width + GAP * 2, right: 0, height: spotRect.height + GAP * 2, pointerEvents: 'all' }} />
+      {/*
+        Click-to-close layer — transparent, full screen, lowest z-index.
+        Tooltip sits above this so its clicks never reach here.
+      */}
+      <div
+        onClick={close}
+        style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'transparent', cursor: 'default' }}
+      />
 
-          {/* Spotlight border ring */}
-          <div style={{
-            position: 'fixed', zIndex: 9001, pointerEvents: 'none',
-            top: spotRect.top - GAP, left: spotRect.left - GAP,
-            width: spotRect.width + GAP * 2, height: spotRect.height + GAP * 2,
-            borderRadius: 12, border: '2px solid #6366f1',
-            boxShadow: '0 0 0 3px rgba(99,102,241,0.35), 0 0 20px rgba(99,102,241,0.5)',
-            animation: 'tring 2s ease-in-out infinite',
-          }} />
-        </>
+      {/*
+        Spotlight — pointer-events: none so it never intercepts clicks.
+        box-shadow spreads a dark overlay OUTWARD from the element,
+        leaving the element itself fully unobscured.
+      */}
+      {spotRect ? (
+        <div style={{
+          position: 'fixed',
+          top: spotRect.top, left: spotRect.left,
+          width: spotRect.width, height: spotRect.height,
+          zIndex: 9001,
+          pointerEvents: 'none',
+          borderRadius: 12,
+          boxShadow: '0 0 0 4px #6366f1, 0 0 0 9999px rgba(0,0,0,0.72)',
+          animation: 'tring 2s ease-in-out infinite',
+        }} />
       ) : (
-        /* Full backdrop when no specific element */
-        <div onClick={close} style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(2px)' }} />
+        /* No specific element — just a dark overlay */
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9001,
+          background: 'rgba(0,0,0,0.65)', pointerEvents: 'none',
+        }} />
       )}
 
-      {/* Tooltip card */}
-      {tooltipPos && (
-        <div style={{
-          position: 'fixed', top: tooltipPos.top, left: tooltipPos.left, width: tooltipPos.width,
-          zIndex: 9002, background: '#0f0f1a', borderRadius: 14,
-          border: '1px solid rgba(99,102,241,0.5)', padding: '16px 18px 14px',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 0 1px rgba(99,102,241,0.15)',
-          animation: 'tfadein 0.22s ease',
-        }}>
+      {/* Tooltip — highest z-index, receives all clicks */}
+      {tooltipStyle && (
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: 'fixed', top: tooltipStyle.top, left: tooltipStyle.left, width: tooltipStyle.width,
+            zIndex: 9002,
+            background: '#0f0f1a',
+            borderRadius: 14,
+            border: '1px solid rgba(99,102,241,0.5)',
+            padding: '16px 18px 14px',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.9), 0 0 0 1px rgba(99,102,241,0.15)',
+            animation: 'tfadein 0.22s ease',
+          }}
+        >
           {/* Progress dots + close */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 12 }}>
             {STEPS.map((_, i) => (
@@ -145,11 +147,14 @@ export default function TourOverlay() {
                 background: i < step ? '#6366f1' : i === step ? '#a855f7' : 'rgba(255,255,255,0.12)',
               }} />
             ))}
-            <button onClick={close} style={{
-              marginLeft: 'auto', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 6, width: 22, height: 22, cursor: 'pointer', color: '#64748b',
-              fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>✕</button>
+            <button
+              onClick={e => { e.stopPropagation(); close(); }}
+              style={{
+                marginLeft: 'auto', background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+                width: 22, height: 22, cursor: 'pointer', color: '#64748b',
+                fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>✕</button>
           </div>
 
           <div style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 6 }}>
@@ -160,28 +165,36 @@ export default function TourOverlay() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button onClick={back} disabled={step === 0} style={{
-              padding: '5px 13px', borderRadius: 7, fontSize: 12, cursor: step === 0 ? 'default' : 'pointer',
-              background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
-              color: step === 0 ? '#1e293b' : '#64748b',
-            }}>← Back</button>
+            <button
+              onClick={e => { e.stopPropagation(); back(); }}
+              disabled={step === 0}
+              style={{
+                padding: '5px 13px', borderRadius: 7, fontSize: 12,
+                cursor: step === 0 ? 'default' : 'pointer',
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                color: step === 0 ? '#1e293b' : '#64748b',
+              }}>← Back</button>
+
             <span style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>{step + 1} / {STEPS.length}</span>
-            <button onClick={next} style={{
-              padding: '5px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
-              background: step === STEPS.length - 1
-                ? 'linear-gradient(135deg,#10b981,#059669)'
-                : 'linear-gradient(135deg,#6366f1,#a855f7)',
-              border: 'none', color: '#fff', cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(99,102,241,0.4)',
-            }}>{step === STEPS.length - 1 ? '🎉 Done!' : 'Next →'}</button>
+
+            <button
+              onClick={e => { e.stopPropagation(); next(); }}
+              style={{
+                padding: '5px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
+                background: step === STEPS.length - 1
+                  ? 'linear-gradient(135deg,#10b981,#059669)'
+                  : 'linear-gradient(135deg,#6366f1,#a855f7)',
+                border: 'none', color: '#fff', cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(99,102,241,0.4)',
+              }}>{step === STEPS.length - 1 ? '🎉 Done!' : 'Next →'}</button>
           </div>
         </div>
       )}
 
       <style>{`
         @keyframes tring {
-          0%,100% { box-shadow: 0 0 0 3px rgba(99,102,241,0.35), 0 0 20px rgba(99,102,241,0.5); border-color: #6366f1; }
-          50%      { box-shadow: 0 0 0 5px rgba(168,85,247,0.4), 0 0 28px rgba(168,85,247,0.6); border-color: #a855f7; }
+          0%,100% { box-shadow: 0 0 0 4px #6366f1, 0 0 0 9999px rgba(0,0,0,0.72); }
+          50%      { box-shadow: 0 0 0 6px #a855f7, 0 0 0 9999px rgba(0,0,0,0.72); }
         }
         @keyframes tfadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
