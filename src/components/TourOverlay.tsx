@@ -16,71 +16,71 @@ const STEPS: TourStep[] = [
   {
     path: '/',
     selector: '#tour-hero',
-    title: '🏠 Step 1 — Dashboard',
-    description: 'This is your command centre. It shows your XP, daily streak, completed modules, and bugs found. Everything you accomplish across the app is reflected here in real time.',
+    title: '🏠 Step 1 — Your Dashboard',
+    description: 'This is your command centre. It tracks your XP, daily streak, completed modules, and bugs found — all updating in real time as you learn across the platform.',
     position: 'bottom',
   },
   {
     path: '/',
     selector: '#tour-level-badge',
-    title: '🎯 Step 2 — Set Your Level',
-    description: 'Select your experience level — from Beginner to AI Quality Engineer. The platform adapts recommended modules, quiz difficulty, and AI tutor responses to match exactly where you are in your career.',
+    title: '🎯 Step 2 — Set Your Experience Level',
+    description: 'Choose your current level — from Beginner to AI Quality Engineer. The platform adapts module recommendations, quiz difficulty, and AI tutor responses to match exactly where you are in your QA career.',
     position: 'right',
+  },
+  {
+    path: '/',
+    selector: '#tour-quick-actions',
+    title: '⚡ Step 3 — Quick Actions',
+    description: 'Your launchpad to every key feature. Click any card to jump into modules, the practice lab, quizzes, AI tutor, interview prep, certifications, capstone projects, or the jobs market.',
+    position: 'top',
   },
   {
     path: '/learning-path',
     selector: null,
-    title: '📚 Step 3 — Learning Path',
-    description: 'Browse 21 structured modules grouped into 5 tracks: Core Testing, Automation, AI Quality Engineering, Specialised, and Leadership. Each module has video-style content, quizzes, and a practice exercise.',
+    title: '📚 Step 4 — Learning Path',
+    description: '21 structured modules across 5 tracks: Core Testing, Automation, AI Quality Engineering, Specialised, and Leadership. Each module has guided content, quizzes, and hands-on exercises.',
     position: 'bottom',
   },
   {
     path: '/quiz',
     selector: null,
-    title: '🎯 Step 4 — Quiz Center',
-    description: 'Test your knowledge with 100+ adaptive questions. Quizzes cover every module topic and adjust difficulty based on your performance. Each wrong answer comes with a full AI-powered explanation.',
+    title: '🎯 Step 5 — Quiz Center',
+    description: '100+ adaptive questions covering every module topic. Quiz difficulty adjusts to your performance, and every wrong answer gets a full AI-powered explanation so you learn from mistakes.',
     position: 'bottom',
   },
   {
     path: '/lab',
     selector: null,
-    title: '🔬 Step 5 — Practice Lab',
-    description: 'Find hidden bugs in real-world simulated apps — an e-commerce store, a login flow, a form, and more. Each bug you find earns XP. This is the closest thing to real QA work on the platform.',
+    title: '🔬 Step 6 — Practice Lab',
+    description: 'Hunt for hidden bugs in real-world simulated apps — e-commerce, login flows, forms, and more. Each bug you find earns XP. This is the closest thing to real QA work on the platform.',
     position: 'bottom',
   },
   {
     path: '/ai-tutor',
     selector: null,
-    title: '🤖 Step 6 — AI Tutor',
-    description: 'Ask anything about software testing — your 24/7 QA mentor powered by Llama 3.3 70B. Get explanations, test case ideas, code review, and career advice. Your full conversation history is saved.',
+    title: '🤖 Step 7 — AI Tutor',
+    description: 'Your 24/7 QA mentor powered by Llama 3.3 70B. Ask anything — get explanations, test case ideas, code review, career advice. Your full conversation history is saved between sessions.',
     position: 'bottom',
   },
   {
     path: '/interview-prep',
     selector: null,
-    title: '💼 Step 7 — Interview Prep',
-    description: 'Practice 53+ real QA interview questions with AI-powered feedback on your answers. Covers manual testing, automation, behavioural, and AI testing questions. Filter by role, country, and difficulty.',
+    title: '💼 Step 8 — Interview Prep',
+    description: 'Practice 53+ real QA interview questions with AI-powered feedback on your answers. Covers manual testing, automation, behavioural, and AI testing. Filter by role, country, and difficulty.',
     position: 'bottom',
   },
   {
     path: '/certifications',
     selector: null,
-    title: '🏅 Step 8 — Certifications Hub',
-    description: 'Study guides and timed exam simulators for 19 industry certifications — ISTQB, Playwright, Cypress, AWS, Postman, and more. Each exam has per-question explanations and a results breakdown.',
+    title: '🏅 Step 9 — Certifications Hub',
+    description: 'Study guides and timed exam simulators for 19 industry certs — ISTQB, Playwright, Cypress, AWS, Postman, and more. Each exam has per-question explanations and a full results breakdown.',
     position: 'bottom',
   },
   {
     path: '/capstone',
     selector: null,
-    title: '🏆 Step 9 — Capstone Projects',
-    description: 'Apply everything in 8 real-world QA workspaces: E-Commerce, SaaS, HealthTech, FinTech, AI Chatbot, RAG Pipeline, Agentic AI, and MCP testing. Each workspace has a simulated app, bug tracker, and test case manager.',
-    position: 'bottom',
-  },
-  {
-    path: '/cv-writer',
-    selector: null,
-    title: '📄 Step 10 — CV / Resume Writer',
-    description: 'Generate a professional QA CV tailored to your experience level and target role. The AI fills in your skills, tools, and achievements based on your platform progress. Export as a ready-to-send document.',
+    title: '🏆 Step 10 — Capstone Projects',
+    description: 'Apply everything in 8 real-world QA workspaces: E-Commerce, SaaS, HealthTech, FinTech, AI Chatbot, RAG Pipeline, Agentic AI, and MCP testing — each with a simulated app, bug tracker, and test case manager.',
     position: 'bottom',
   },
 ];
@@ -89,27 +89,42 @@ interface TooltipPos {
   top: number;
   left: number;
   width: number;
-  arrowSide: 'top' | 'bottom' | 'left' | 'right' | 'none';
 }
 
-function getTooltipPos(el: Element | null, preferredSide: string): TooltipPos {
-  if (!el) return { top: window.innerHeight / 2 - 100, left: window.innerWidth / 2 - 180, width: 360, arrowSide: 'none' };
+function calcPos(el: Element | null, side: string): TooltipPos {
+  const TW = Math.min(380, window.innerWidth - 32);
+  const PAD = 14;
+  if (!el) {
+    return { top: window.innerHeight / 2 - 110, left: (window.innerWidth - TW) / 2, width: TW };
+  }
   const r = el.getBoundingClientRect();
-  const TW = Math.min(360, window.innerWidth - 32);
-  const TH = 200;
-  const PAD = 16;
+  const cx = r.left + r.width / 2;
 
-  if (preferredSide === 'bottom' && r.bottom + TH + PAD < window.innerHeight) {
-    return { top: r.bottom + PAD, left: Math.max(8, Math.min(r.left, window.innerWidth - TW - 8)), width: TW, arrowSide: 'top' };
+  if (side === 'bottom') {
+    return { top: r.bottom + PAD, left: Math.max(8, Math.min(cx - TW / 2, window.innerWidth - TW - 8)), width: TW };
   }
-  if (preferredSide === 'top' && r.top - TH - PAD > 0) {
-    return { top: r.top - TH - PAD, left: Math.max(8, Math.min(r.left, window.innerWidth - TW - 8)), width: TW, arrowSide: 'bottom' };
+  if (side === 'top') {
+    return { top: Math.max(8, r.top - 220 - PAD), left: Math.max(8, Math.min(cx - TW / 2, window.innerWidth - TW - 8)), width: TW };
   }
-  if (preferredSide === 'right' && r.right + TW + PAD < window.innerWidth) {
-    return { top: Math.max(8, r.top), left: r.right + PAD, width: TW, arrowSide: 'left' };
+  if (side === 'right' && r.right + TW + PAD < window.innerWidth) {
+    return { top: Math.max(8, r.top - 10), left: r.right + PAD, width: TW };
   }
-  // fallback: centre of screen
-  return { top: window.innerHeight / 2 - 100, left: window.innerWidth / 2 - TW / 2, width: TW, arrowSide: 'none' };
+  // fallback centre
+  return { top: window.innerHeight / 2 - 110, left: (window.innerWidth - TW) / 2, width: TW };
+}
+
+function waitForElement(selector: string, cb: (el: Element) => void, maxWait = 4000) {
+  const el = document.querySelector(selector);
+  if (el) { cb(el); return () => {}; }
+
+  const observer = new MutationObserver(() => {
+    const found = document.querySelector(selector);
+    if (found) { observer.disconnect(); cb(found); }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  const timeout = setTimeout(() => { observer.disconnect(); cb(document.body); }, maxWait);
+  return () => { observer.disconnect(); clearTimeout(timeout); };
 }
 
 export default function TourOverlay() {
@@ -118,153 +133,175 @@ export default function TourOverlay() {
   const pathname = usePathname();
   const [step, setStep] = useState(0);
   const [pos, setPos] = useState<TooltipPos | null>(null);
-  const [highlight, setHighlight] = useState<DOMRect | null>(null);
-  const [ready, setReady] = useState(false);
-  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
+  const [visible, setVisible] = useState(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  const navDoneRef = useRef(false);
 
   const current = STEPS[step];
 
-  const positionTooltip = useCallback(() => {
+  const showTooltip = useCallback(() => {
+    setVisible(false);
+    if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null; }
+
     if (!current.selector) {
-      setHighlight(null);
-      setPos({ top: window.innerHeight / 2 - 120, left: window.innerWidth / 2 - 180, width: 360, arrowSide: 'none' });
-      setReady(true);
+      // No specific element — centre on page
+      setTimeout(() => {
+        setHighlightRect(null);
+        setPos(calcPos(null, 'bottom'));
+        setVisible(true);
+      }, 350);
       return;
     }
-    const el = document.querySelector(current.selector);
-    if (!el) {
-      retryRef.current = setTimeout(positionTooltip, 300);
-      return;
-    }
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setTimeout(() => {
-      const fresh = document.querySelector(current.selector!);
-      if (fresh) {
-        setHighlight(fresh.getBoundingClientRect());
-        setPos(getTooltipPos(fresh, current.position ?? 'bottom'));
-      }
-      setReady(true);
-    }, 400);
+
+    const cleanup = waitForElement(current.selector, (el) => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        const fresh = document.querySelector(current.selector!);
+        const target = fresh ?? el;
+        setHighlightRect(target.getBoundingClientRect());
+        setPos(calcPos(target, current.position ?? 'bottom'));
+        setVisible(true);
+      }, 300);
+    });
+    cleanupRef.current = cleanup;
   }, [current]);
 
-  // Navigate when step changes
+  // When step changes: navigate if needed, then show tooltip automatically
   useEffect(() => {
     if (!tourActive) return;
-    setReady(false);
-    if (retryRef.current) clearTimeout(retryRef.current);
+    navDoneRef.current = false;
+    setVisible(false);
+
     if (pathname !== current.path) {
       router.push(current.path);
     } else {
-      positionTooltip();
+      showTooltip();
     }
   }, [step, tourActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // After navigation completes, position tooltip
-  useEffect(() => {
-    if (!tourActive || !ready) return;
-  }, [pathname, tourActive]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // After navigation completes, auto-show tooltip
   useEffect(() => {
     if (!tourActive) return;
-    if (pathname === current.path) {
-      if (retryRef.current) clearTimeout(retryRef.current);
-      positionTooltip();
+    if (pathname === current.path && !navDoneRef.current) {
+      navDoneRef.current = true;
+      showTooltip();
     }
   }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const next = () => {
-    if (step < STEPS.length - 1) { setStep(s => s + 1); }
-    else { setTourActive(false); setStep(0); }
+  // Cleanup on unmount
+  useEffect(() => () => { cleanupRef.current?.(); }, []);
+
+  const goNext = () => {
+    if (step < STEPS.length - 1) setStep(s => s + 1);
+    else close();
   };
-  const back = () => { if (step > 0) setStep(s => s - 1); };
-  const close = () => { setTourActive(false); setStep(0); };
+  const goBack = () => { if (step > 0) setStep(s => s - 1); };
+  const close = () => { setTourActive(false); setStep(0); setVisible(false); };
 
   if (!tourActive) return null;
 
   return (
     <>
-      {/* Dark overlay */}
-      <div onClick={close} style={{
-        position: 'fixed', inset: 0, zIndex: 9000,
-        background: 'rgba(0,0,0,0.65)',
-        backdropFilter: 'blur(2px)',
-      }} />
+      {/* Backdrop */}
+      <div
+        onClick={close}
+        style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)' }}
+      />
 
-      {/* Highlight cutout */}
-      {highlight && (
+      {/* Spotlight ring around target element */}
+      {highlightRect && visible && (
         <div style={{
           position: 'fixed',
-          top: highlight.top - 6,
-          left: highlight.left - 6,
-          width: highlight.width + 12,
-          height: highlight.height + 12,
+          top: highlightRect.top - 6,
+          left: highlightRect.left - 6,
+          width: highlightRect.width + 12,
+          height: highlightRect.height + 12,
           zIndex: 9001,
           borderRadius: 10,
-          boxShadow: '0 0 0 4px #6366f1, 0 0 0 9999px rgba(0,0,0,0.65)',
           pointerEvents: 'none',
+          boxShadow: '0 0 0 4px #6366f1, 0 0 0 9999px rgba(0,0,0,0.6)',
           transition: 'all 0.3s ease',
+          animation: 'tourPulse 2s ease-in-out infinite',
         }} />
       )}
 
-      {/* Tooltip card */}
-      {pos && ready && (
-        <div style={{
-          position: 'fixed',
-          top: pos.top,
-          left: pos.left,
-          width: pos.width,
-          zIndex: 9002,
-          background: '#0f0f1a',
-          border: '1px solid rgba(99,102,241,0.4)',
-          borderRadius: 16,
-          padding: '20px',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(99,102,241,0.15)',
-          animation: 'fadeInUp 0.2s ease',
-        }}>
-          {/* Step counter */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {STEPS.map((_, i) => (
-                <div key={i} style={{
-                  height: 3, borderRadius: 2, transition: 'all 0.3s',
-                  width: i === step ? 20 : 6,
-                  background: i <= step ? '#6366f1' : 'rgba(255,255,255,0.12)',
-                }} />
-              ))}
-            </div>
+      {/* Tooltip card — auto-appears after navigation */}
+      {pos && visible && (
+        <div
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            width: pos.width,
+            zIndex: 9002,
+            background: 'linear-gradient(135deg, #0f0f1a 0%, #13132a 100%)',
+            border: '1px solid rgba(99,102,241,0.45)',
+            borderRadius: 16,
+            padding: '18px 20px 16px',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(99,102,241,0.1)',
+            animation: 'fadeInUp 0.25s ease',
+          }}
+        >
+          {/* Progress bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 14 }}>
+            {STEPS.map((_, i) => (
+              <div key={i} style={{
+                height: 3, borderRadius: 2, flexShrink: 0, transition: 'all 0.3s',
+                width: i === step ? 22 : 6,
+                background: i < step ? '#6366f1' : i === step ? '#a855f7' : 'rgba(255,255,255,0.1)',
+              }} />
+            ))}
             <button onClick={close} style={{
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 6, width: 24, height: 24, cursor: 'pointer',
-              color: '#64748b', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginLeft: 'auto', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
+              width: 22, height: 22, cursor: 'pointer', color: '#475569',
+              fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>✕</button>
           </div>
 
-          <h3 style={{ margin: '0 0 8px', fontSize: 15, fontWeight: 700, color: '#f1f5f9', lineHeight: 1.3 }}>
+          <h3 style={{ margin: '0 0 7px', fontSize: 14, fontWeight: 700, color: '#f1f5f9', lineHeight: 1.3 }}>
             {current.title}
           </h3>
-          <p style={{ margin: '0 0 18px', fontSize: 13, color: '#94a3b8', lineHeight: 1.65 }}>
+          <p style={{ margin: '0 0 16px', fontSize: 12.5, color: '#94a3b8', lineHeight: 1.65 }}>
             {current.description}
           </p>
 
-          {/* Navigation */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button onClick={back} disabled={step === 0} style={{
-              padding: '7px 16px', borderRadius: 8, cursor: step === 0 ? 'default' : 'pointer',
+            <button onClick={goBack} disabled={step === 0} style={{
+              padding: '6px 14px', borderRadius: 7, cursor: step === 0 ? 'default' : 'pointer',
               background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
-              color: step === 0 ? '#334155' : '#64748b', fontSize: 13, transition: 'all 0.15s',
+              color: step === 0 ? '#1e293b' : '#64748b', fontSize: 12, transition: 'all 0.15s',
             }}>← Back</button>
-            <span style={{ fontSize: 11, color: '#334155' }}>{step + 1} / {STEPS.length}</span>
-            <button onClick={next} style={{
-              padding: '7px 18px', borderRadius: 8, cursor: 'pointer',
-              background: 'linear-gradient(135deg, #6366f1, #a855f7)',
-              border: 'none', color: '#fff', fontSize: 13, fontWeight: 600,
-              boxShadow: '0 4px 12px rgba(99,102,241,0.4)', transition: 'all 0.15s',
+
+            <span style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>
+              {step + 1} / {STEPS.length}
+            </span>
+
+            <button onClick={goNext} style={{
+              padding: '6px 16px', borderRadius: 7, cursor: 'pointer',
+              background: step === STEPS.length - 1
+                ? 'linear-gradient(135deg, #10b981, #059669)'
+                : 'linear-gradient(135deg, #6366f1, #a855f7)',
+              border: 'none', color: '#fff', fontSize: 12, fontWeight: 700,
+              boxShadow: '0 4px 12px rgba(99,102,241,0.35)', transition: 'all 0.15s',
             }}>
               {step === STEPS.length - 1 ? '🎉 Done!' : 'Next →'}
             </button>
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes tourPulse {
+          0%, 100% { box-shadow: 0 0 0 4px #6366f1, 0 0 0 9999px rgba(0,0,0,0.6); }
+          50%       { box-shadow: 0 0 0 7px #a855f7, 0 0 0 9999px rgba(0,0,0,0.6); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </>
   );
 }

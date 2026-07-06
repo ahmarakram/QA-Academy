@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "qa-academy-2",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "npm.cmd",
       "runtimeArgs": ["run", "dev", "--", "--port", "3010"],
       "port": 3010
     }
