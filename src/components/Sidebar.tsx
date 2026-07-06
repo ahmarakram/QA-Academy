@@ -88,7 +88,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {/* Level badge */}
-        <div style={{
+        <div id="tour-level-badge" style={{
           marginTop: 14, padding: '7px 12px', borderRadius: 10,
           background: `${lvlColor}18`,
           border: `1px solid ${lvlColor}35`,
@@ -100,7 +100,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       </div>
 
       {/* XP + Streak */}
-      <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(99,102,241,0.08)' }}>
+      <div id="tour-xp-streak" style={{ padding: '14px 16px', borderBottom: '1px solid rgba(99,102,241,0.08)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 8 }}>
           <span style={{ color: '#a5b4fc', fontWeight: 600 }}>✨ {xp.toLocaleString()} XP</span>
           <span style={{ color: '#6366f1' }}>{completedModules}/21 modules</span>
@@ -131,7 +131,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       </div>
 
       {/* Search trigger */}
-      <div style={{ padding: '8px 10px', borderBottom: '1px solid rgba(99,102,241,0.06)' }}>
+      <div id="tour-search" style={{ padding: '8px 10px', borderBottom: '1px solid rgba(99,102,241,0.06)' }}>
         <button
           onClick={() => {
             if (typeof window !== 'undefined') {
@@ -157,7 +157,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, padding: '10px 8px', overflowY: 'auto' }}>
+      <nav id="tour-nav" style={{ flex: 1, padding: '10px 8px', overflowY: 'auto' }}>
         <div style={{ fontSize: 10, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px 8px', fontWeight: 600 }}>
           Navigation
         </div>

@@ -123,7 +123,7 @@ export default function Dashboard() {
       <div className="page-content fade-in-up">
 
         {/* ── Hero ─────────────────────────────────────────── */}
-        <div className="hero-card" style={{ marginBottom: 24 }}>
+        <div id="tour-hero" className="hero-card" style={{ marginBottom: 24 }}>
           {/* big background emoji */}
           <div style={{
             position: 'absolute', top: -30, right: -20, fontSize: 160,
@@ -201,7 +201,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Progress Stats ──────────────────────────────── */}
-        <div className="stats-grid" style={{ marginBottom: 24 }}>
+        <div id="tour-stats" className="stats-grid" style={{ marginBottom: 24 }}>
           {stats.map((stat, i) => (
             <div
               key={stat.label}
@@ -222,7 +222,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Platform Overview ───────────────────────────── */}
-        <div style={{ marginBottom: 28 }}>
+        <div id="tour-platform" style={{ marginBottom: 28 }}>
           <h2 className="section-title">Platform Overview</h2>
           <div className="platform-grid">
             {platformStats.map((s, i) => (
@@ -243,7 +243,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Learning Tracks ─────────────────────────────── */}
-        <div style={{ marginBottom: 28 }}>
+        <div id="tour-tracks" style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 8 }}>
             <h2 className="section-title" style={{ margin: 0 }}>Learning Tracks</h2>
             <Link href="/learning-path" style={{
@@ -313,7 +313,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Daily Challenge ─────────────────────────────── */}
-        <div style={{ marginBottom: 28 }}>
+        <div id="tour-challenge" style={{ marginBottom: 28 }}>
           <h2 className="section-title">Today&apos;s Challenge</h2>
           <div style={{
             background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.08))',
@@ -378,7 +378,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Quick Actions ───────────────────────────────── */}
-        <div style={{ marginBottom: 32 }}>
+        <div id="tour-quick-actions" style={{ marginBottom: 32 }}>
           <h2 className="section-title">Quick Actions</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
             {quickActions.map((action, i) => (
