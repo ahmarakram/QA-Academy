@@ -797,7 +797,7 @@ export default function AutomationToolsPage() {
           )}
 
           {/* ═══ INSTALL GUIDES ═══ */}
-          {(Object.keys(guides) as Tab[]).filter(k => k !== 'overview' && k !== 'how-it-works').includes(activeTab) && guides[activeTab]?.length > 0 && (
+          {activeTab !== 'overview' && activeTab !== 'how-it-works' && (guides as Record<string, unknown>)[activeTab] && (guides[activeTab as keyof typeof guides] as unknown[])?.length > 0 && (
             <div>
               {(() => {
                 const meta: Record<string, { color: string; icon: string; tagline: string }> = {

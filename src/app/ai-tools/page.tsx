@@ -61,7 +61,6 @@ const tools = [
 const installSteps: Record<Tab, { title: string; steps: { heading: string; code?: string; note?: string }[] }[]> = {
   overview: [],
   'qa-workflows': [],
-  'cli-tools': [],
 
   'claude-code': [
     {
@@ -276,8 +275,6 @@ const installSteps: Record<Tab, { title: string; steps: { heading: string; code?
       ],
     },
   ],
-
-  'qa-workflows': [],
 };
 
 const qaWorkflows = [

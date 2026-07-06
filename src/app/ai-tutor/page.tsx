@@ -92,9 +92,10 @@ export default function AITutorPage() {
   useEffect(() => {
     setMounted(true);
     if (tutorHistory.length > 0) {
-      setMessages(tutorHistory.map((h: { role: string; text: string; topic?: string; followUps?: string[]; timestamp: string }) => ({
-        ...h,
-        timestamp: new Date(h.timestamp),
+      setMessages(tutorHistory.map((h) => ({
+        role: h.role,
+        text: h.content,
+        timestamp: new Date(),
       })) as Message[]);
       setShowSuggestions(false);
     }
@@ -137,8 +138,8 @@ export default function AITutorPage() {
         // Persist to store (skip welcome-only state)
         useStore.getState().setTutorHistory(
           updated.filter(m => m.id !== 'welcome').map(m => ({
-            ...m,
-            timestamp: m.timestamp.toISOString(),
+            role: m.role as 'user' | 'assistant',
+            content: m.text,
           }))
         );
         return updated;
