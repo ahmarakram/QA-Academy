@@ -24,7 +24,6 @@ const navItems = [
   { href: '/career', icon: '🚀', label: 'Career Intelligence' },
   { href: '/cv-writer', icon: '📄', label: 'CV / Resume Writer' },
   { href: '/manual', icon: '📘', label: 'User Manual' },
-  { href: '/video-tour', icon: '🎬', label: 'Product Video Tour' },
   { href: '/settings', icon: '⚙️', label: 'AI Settings' },
 ];
 
