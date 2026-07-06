@@ -84,7 +84,7 @@ export default function TourOverlay() {
 
   const next = () => step < STEPS.length - 1 ? setStep(step + 1) : close();
   const back = () => step > 0 ? setStep(step - 1) : undefined;
-  const close = () => { setTourActive(false); setStep(0); clearTimer(); };
+  const close = () => { setTourActive(false); setStep(0); clearTimer(); router.push('/'); };
 
   if (!tourActive) return null;
 
