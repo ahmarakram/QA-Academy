@@ -1,10 +1,8 @@
 'use client';
 
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
-
-const AppTour = lazy(() => import('./AppTour'));
 
 const levels = [
   { key: 'beginner', icon: '🌱', label: 'Beginner', desc: 'New to software testing' },
@@ -25,11 +23,10 @@ const goals = [
 ];
 
 export default function OnboardingWizard() {
-  const { setLevel, completeOnboarding } = useStore();
+  const { setLevel, completeOnboarding, setTourActive } = useStore();
   const [step, setStep] = useState(0);
   const [chosenLevel, setChosenLevel] = useState('beginner');
   const [chosenPath, setChosenPath] = useState('/learning-path');
-  const [runTour, setRunTour] = useState(false);
   const router = useRouter();
 
   const selectGoal = (path: string) => {
@@ -40,7 +37,7 @@ export default function OnboardingWizard() {
 
   const startTour = () => {
     completeOnboarding();
-    setRunTour(true);
+    setTourActive(true);
   };
 
   const skipTour = () => {
@@ -118,14 +115,6 @@ export default function OnboardingWizard() {
   ];
 
   const current = steps[Math.min(step, 2)];
-
-  if (runTour) {
-    return (
-      <Suspense fallback={null}>
-        <AppTour onDone={() => { setRunTour(false); router.push(chosenPath); }} />
-      </Suspense>
-    );
-  }
 
   return (
     <div style={{
