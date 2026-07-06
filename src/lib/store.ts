@@ -95,6 +95,8 @@ interface Store {
   setTheme: (theme: Theme) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
+  tourActive: boolean;
+  setTourActive: (v: boolean) => void;
   // cert / plan actions
   setPlan: (plan: Plan) => void;
   earnCert: (cert: EarnedCert) => void;
@@ -122,6 +124,7 @@ export const useStore = create<Store>()(
       tutorHistory: [],
       theme: 'dark',
       hasOnboarded: false,
+      tourActive: false,
       plan: 'free',
       earnedCerts: [],
       freeCertUsed: false,
@@ -207,6 +210,7 @@ export const useStore = create<Store>()(
 
       completeOnboarding: () => set({ hasOnboarded: true }),
       resetOnboarding: () => set({ hasOnboarded: false }),
+      setTourActive: (v) => set({ tourActive: v }),
 
       setPlan: (plan) => set({ plan }),
       // Idempotent: never store the same certName twice

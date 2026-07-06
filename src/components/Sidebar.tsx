@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import Logo from './Logo';
 
@@ -55,8 +55,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { level, xp, moduleProgress, badges, labBugs, streak, resetOnboarding } = useStore();
+  const { level, xp, moduleProgress, badges, labBugs, streak, setTourActive } = useStore();
 
   const completedModules = moduleProgress.filter(m => m.completed).length;
   const xpToNextLevel = 500;
@@ -194,8 +193,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         <button
           onClick={() => {
             onClose?.();
-            resetOnboarding();
-            router.push('/');
+            setTourActive(true);
           }}
           style={{
             width: '100%', padding: '7px 10px',

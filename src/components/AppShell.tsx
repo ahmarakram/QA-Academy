@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import AITutorFloat from './AITutorFloat';
 import SearchModal from './SearchModal';
 import OnboardingWizard from './OnboardingWizard';
+import TourOverlay from './TourOverlay';
 import Logo from './Logo';
 import { useStore } from '@/lib/store';
 
@@ -78,6 +79,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <AITutorFloat />
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       {!hasOnboarded && <OnboardingWizard />}
+      <TourOverlay />
     </div>
   );
 }
