@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import Logo from './Logo';
 
@@ -55,7 +55,8 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { level, xp, moduleProgress, badges, labBugs, streak } = useStore();
+  const router = useRouter();
+  const { level, xp, moduleProgress, badges, labBugs, streak, resetOnboarding } = useStore();
 
   const completedModules = moduleProgress.filter(m => m.completed).length;
   const xpToNextLevel = 500;
@@ -188,11 +189,31 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       <div style={{
         padding: '12px 16px',
         borderTop: '1px solid rgba(99,102,241,0.08)',
-        fontSize: 10, color: '#1e293b',
-        display: 'flex', alignItems: 'center', gap: 6,
+        display: 'flex', flexDirection: 'column', gap: 8,
       }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 6px rgba(16,185,129,0.8)' }} />
-        AI-Powered QA Learning
+        <button
+          onClick={() => {
+            onClose?.();
+            resetOnboarding();
+            router.push('/');
+          }}
+          style={{
+            width: '100%', padding: '7px 10px',
+            background: 'rgba(99,102,241,0.08)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            borderRadius: 8, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 12, color: '#a5b4fc', transition: 'all 0.18s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.18)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.08)')}
+        >
+          🗺️ Take the Tour
+        </button>
+        <div style={{ fontSize: 10, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 6px rgba(16,185,129,0.8)' }} />
+          AI-Powered QA Learning
+        </div>
       </div>
     </aside>
   );

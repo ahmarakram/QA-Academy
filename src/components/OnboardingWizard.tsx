@@ -40,7 +40,6 @@ export default function OnboardingWizard() {
 
   const startTour = () => {
     completeOnboarding();
-    router.push(chosenPath);
     setRunTour(true);
   };
 
@@ -123,7 +122,7 @@ export default function OnboardingWizard() {
   if (runTour) {
     return (
       <Suspense fallback={null}>
-        <AppTour onDone={() => setRunTour(false)} />
+        <AppTour onDone={() => { setRunTour(false); router.push(chosenPath); }} />
       </Suspense>
     );
   }

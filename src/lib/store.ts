@@ -94,6 +94,7 @@ interface Store {
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   completeOnboarding: () => void;
+  resetOnboarding: () => void;
   // cert / plan actions
   setPlan: (plan: Plan) => void;
   earnCert: (cert: EarnedCert) => void;
@@ -205,6 +206,7 @@ export const useStore = create<Store>()(
       setTheme: (theme) => set({ theme }),
 
       completeOnboarding: () => set({ hasOnboarded: true }),
+      resetOnboarding: () => set({ hasOnboarded: false }),
 
       setPlan: (plan) => set({ plan }),
       // Idempotent: never store the same certName twice
